@@ -216,13 +216,13 @@ for hicno in inpind['HICNO'].unique():
     # get rows from inpind for this patient
     ptrows = inpind.loc[inpind['HICNO']==hicno, :]
 
-    # calculate age
-    AGEF = DATE_ASOF.year - DOB.year
-    AGEF_EDIT = AGEF
-
     # get demographic data from ptrows
     DOB = ptrows.iloc[0]['DOB']
     SEX = ptrows.iloc[0]['SEX']
+
+    # calculate age
+    AGEF = DATE_ASOF.year - DOB.year
+    AGEF_EDIT = AGEF
 
     # initialize C and HCC arrays
     C = [0] * N_CC
@@ -236,6 +236,8 @@ for hicno in inpind['HICNO'].unique():
 
         if row['DIAG_TYPE'] == 9:
             # do ICD-9-CM edit stuff
+            pass
 
         if row['DIAG_TYPE'] == 0:
             # do ICD-10-CM edit stuff
+            pass
