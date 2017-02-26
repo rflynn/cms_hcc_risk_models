@@ -1,0 +1,59 @@
+name: cms
+channels:
+- conda-forge
+- defaults
+dependencies:
+- conda-forge::ca-certificates=2017.1.23=0
+- conda-forge::certifi=2017.1.23=py35_0
+- conda-forge::decorator=4.0.11=py35_0
+- conda-forge::ipython=5.2.2=py35_0
+- conda-forge::ipython_genutils=0.1.0=py35_0
+- conda-forge::ncurses=5.9=10
+- conda-forge::openssl=1.0.2h=3
+- conda-forge::pandas=0.19.2=np112py35_1
+- conda-forge::pexpect=4.2.1=py35_0
+- conda-forge::pickleshare=0.7.3=py35_0
+- conda-forge::pip=9.0.1=py35_0
+- conda-forge::prompt_toolkit=1.0.13=py35_0
+- conda-forge::ptyprocess=0.5.1=py35_0
+- conda-forge::pygments=2.2.0=py35_0
+- conda-forge::python=3.5.3=1
+- conda-forge::python-dateutil=2.6.0=py35_0
+- conda-forge::pytz=2016.10=py35_0
+- conda-forge::readline=6.2=0
+- conda-forge::setuptools=33.1.0=py35_0
+- conda-forge::simplegeneric=0.8.1=py35_0
+- conda-forge::six=1.10.0=py35_1
+- conda-forge::sqlite=3.13.0=1
+- conda-forge::tk=8.5.19=1
+- conda-forge::traitlets=4.3.1=py35_0
+- conda-forge::wcwidth=0.1.7=py35_0
+- conda-forge::wheel=0.29.0=py35_0
+- conda-forge::xz=5.2.2=0
+- conda-forge::zlib=1.2.11=0
+- mkl=2017.0.1=0
+- numpy=1.12.0=py35_0
+- sas7bdat=2.0.7=py35_0
+- pip:
+  - certifi==2017.1.23
+  - decorator==4.0.11
+  - ipython==5.2.2
+  - ipython-genutils==0.1.0
+  - pandas==0.19.2
+  - pexpect==4.2.1
+  - pickleshare==0.7.3
+  - pip==9.0.1
+  - prompt-toolkit==1.0.13
+  - ptyprocess==0.5.1
+  - pygments==2.2.0
+  - python-dateutil==2.6.0
+  - pytz==2016.10
+  - setuptools==33.1.0.post20170122
+  - simplegeneric==0.8.1
+  - six==1.10.0
+  - traitlets==4.3.1
+  - wcwidth==0.1.7
+  - wheel==0.29.0
+  - xport==2.0.2
+prefix: /home/galtay/anaconda3/envs/cms
+
