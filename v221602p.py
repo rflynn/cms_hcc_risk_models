@@ -2,9 +2,9 @@
 CMS Risk Model
 """
 
-input_vars = ['SEX', 'DOB', 'LTIMCAID', 'NEMCAID', 'OREC']
+INPUTVARS = ['SEX', 'DOB', 'LTIMCAID', 'NEMCAID', 'OREC']
 
-dem_vars = [
+DEMVARS = [
     'AGEF', 'ORIGDS', 'DISABL',
     'F0_34',  'F35_44', 'F45_54', 'F55_59', 'F60_64', 'F65_69',
     'F70_74', 'F75_79', 'F80_84', 'F85_89', 'F90_94', 'F95_GT',
@@ -20,7 +20,7 @@ dem_vars = [
     'NEM95_GT',
 ]
 
-hccv22_list79 = [
+HCCV22_list79 = [
       'HCC1',   'HCC2',   'HCC6',   'HCC8',   'HCC9',   'HCC10',  'HCC11',  'HCC12',
       'HCC17',  'HCC18',  'HCC19',  'HCC21',  'HCC22',  'HCC23',  'HCC27',  'HCC28',
       'HCC29',  'HCC33',  'HCC34',  'HCC35',  'HCC39',  'HCC40',  'HCC46',  'HCC47',
@@ -34,7 +34,7 @@ hccv22_list79 = [
       'HCC169', 'HCC170', 'HCC173', 'HCC176', 'HCC186', 'HCC188', 'HCC189',
 ]
 
-ccv22_list79 = [
+CCV22_list79 = [
       'CC1',    'CC2',    'CC6',   'CC8',   'CC9',   'CC10',  'CC11',   'CC12',
       'CC17',   'CC18',   'CC19',  'CC21',  'CC22',  'CC23',  'CC27',   'CC28',
       'CC29',   'CC33',   'CC34',  'CC35',  'CC39',  'CC40',  'CC46',   'CC47',
@@ -48,7 +48,7 @@ ccv22_list79 = [
       'CC169',  'CC170',  'CC173', 'CC176', 'CC186', 'CC188', 'CC189',
 ]
 
-scorevars = [
+SCOREVARS = [
     'SCORE_COMMUNITY_NA', 'SCORE_COMMUNITY_ND',
     'SCORE_COMMUNITY_FBA', 'SCORE_COMMUNITY_FBD',
     'SCORE_COMMUNITY_PBA', 'SCORE_COMMUNITY_PBD',
