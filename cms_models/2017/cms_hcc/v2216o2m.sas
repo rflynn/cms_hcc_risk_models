@@ -72,6 +72,8 @@
  %**********************************************************************
  * step1: include external macros
  **********************************************************************;
+
+
  %IF "&AGESEXMAC" ne "" %THEN %DO;
      %INCLUDE IN0(&AGESEXMAC) /SOURCE2; %* create demographic variables;
  %END;
@@ -90,6 +92,8 @@
  %IF "&SCOREMAC" ne "" %THEN %DO;
      %INCLUDE IN0(&SCOREMAC)  /SOURCE2; %* calculate score variable;
  %END;
+
+
 
  %**********************************************************************
  * step2: define internal macro variables
@@ -282,7 +286,6 @@
     %END;
  %MEND INTER;
 
-
  %**********************************************************************
  * step3: merge person and diagnosis files outputting one record
  *        per person with score and HCC variables for each input person
@@ -293,8 +296,7 @@
    %****************************************************
     * step3.1: declaration section
     ****************************************************;
-
-    %IF "&LABELMAC" ne "" %THEN %&LABELMAC;  *HCC labels;
+   %IF "&LABELMAC" ne "" %THEN %&LABELMAC;  *HCC labels;
 
    %* length of new variables (length for other age/sex vars is set in
       &AGESEXMAC macro);
