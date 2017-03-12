@@ -95,10 +95,8 @@ class HccFormats:
         cc = -1
         if diag_type == 0:
             df = self.tables['I0SECV22Y16RC']
-        elif diag_type == 9:
-            df = self.tables['I9SECV22Y15RC']
         else:
-            raise ValueError('diag_type must be in [0,9]')
+            raise ValueError('diag_type must be in [0]')
         if diag in df.index:
             cc = int(df.loc[diag]['LABEL'])
         return cc
