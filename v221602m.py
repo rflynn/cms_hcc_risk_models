@@ -21,10 +21,14 @@
 
 
 """
+
 import pandas
 import datetime
+import formats
 import v221602p
 import v22h79l1
+import v22i0ed1
+
 
 # input
 #===================================================================
@@ -38,11 +42,18 @@ inpind = inpind.sort_values('HICNO')
 IDVAR = 'HICNO'
 KEEPVAR = [IDVAR] + v221602p.INPUTVARS + v221602p.SCOREVARS + \
           v221602p.DEMVARS + v221602p.HCCV22_list79 + v221602p.CCV22_list79
-SEDITS = 1
+SEDITS = True
 DATE_ASOF = datetime.date(2016, 2, 1)
 
 # read regression coefficients
-hcccoefn = pandas.read_csv('cms_models/2017/cms_hcc/hcccoefn.csv')
+fname = 'cms_models/2017/cms_hcc_v2216_79_02/C2214O5P.csv'
+hcccoefn = pandas.read_csv(fname)
+
+# read formats file
+fname = 'cms_models/2017/cms_hcc_v2216_79_02/F221690P.csv'
+hcc_formats = formats.HccFormats(fname)
+
+
 
 N_CC=201 #max # of HCCs
 
@@ -217,27 +228,78 @@ for hicno in inpind['HICNO'].unique():
     ptrows = inpind.loc[inpind['HICNO']==hicno, :]
 
     # get demographic data from ptrows
-    DOB = ptrows.iloc[0]['DOB']
-    SEX = ptrows.iloc[0]['SEX']
+    dob = ptrows.iloc[0]['DOB']
+    sex = ptrows.iloc[0]['SEX']
 
     # calculate age
-    AGEF = DATE_ASOF.year - DOB.year
-    AGEF_EDIT = AGEF
+    agef = DATE_ASOF.year - dob.year
+    agef_edit = agef
 
     # initialize C and HCC arrays
-    C = [0] * N_CC
-    HCC = [0] * N_CC
+    # these are just flags.  we use N_CC + 1 so that
+    # we can use 1-based indexing (or simply say C[i] == 1
+    # means the i'th condition code is true. C[0] and HCC[0]
+    # will always be zero
+    C = [0] * (N_CC + 1)
+    HCC = [0] * (N_CC + 1)
 
     # loop over diagnoses and assign CCs
     for ii, row in ptrows.iterrows():
-        print(ii, row['HICNO'])
+        print()
+
+        diag = row['DIAG']
+        diag_type = row['DIAG_TYPE']
+        print('ii={}, hicno={}, diag={}, diag_type={}'.format(
+            ii, hicno, diag, diag_type))
+
         # initial value
-        CC = '9999'
+        cc = 9999
+        print('initial cc={}'.format(cc))
 
-        if row['DIAG_TYPE'] == 9:
+        if diag_type == 9:
             # do ICD-9-CM edit stuff
-            pass
+            cc = v22i9ed1.icd9_edits(cc, agef_edit, sex, diag, SEDITS, hcc_formats)
+            print('after ICD-9 edits cc={}'.format(cc))
+            if cc != -1 and cc != 9999:
+                if 1 <= cc <= N_CC:
+                    C[cc] = 1
 
-        if row['DIAG_TYPE'] == 0:
+            # assign condition category
+            elif cc == 9999:
+                # primary assignment
+                cc = hcc_formats.cc_pri_assignment(diag, diag_type)
+                print('after primary cc={}'.format(cc))
+                if 1 <= cc <= N_CC:
+                    C[cc] = 1
+                # duplicate assignment
+                cc = hcc_formats.cc_dup_assignment(diag, diag_type)
+                print('after duplicate cc={}'.format(cc))
+                if 1 <= cc <= N_CC:
+                    C[cc] = 1
+
+
+        if diag_type == 0:
             # do ICD-10-CM edit stuff
-            pass
+            cc = v22i0ed1.icd10_edits(cc, agef_edit, sex, diag, SEDITS, hcc_formats)
+            print('after ICD-10 edits cc={}'.format(cc))
+            if cc != -1 and cc != 9999:
+                if 1 <= cc <= N_CC:
+                    C[cc] = 1
+
+            # assign condition category
+            elif cc == 9999:
+                # primary assignment
+                cc = hcc_formats.cc_pri_assignment(diag, diag_type)
+                print('after primary cc={}'.format(cc))
+                if 1 <= cc <= N_CC:
+                    C[cc] = 1
+                # duplicate assignment
+                cc = hcc_formats.cc_dup_assignment(diag, diag_type)
+                print('after duplicate cc={}'.format(cc))
+                if 1 <= cc <= N_CC:
+                    C[cc] = 1
+                # secondary assignment
+                cc = hcc_formats.cc_sec_assignment(diag, diag_type)
+                print('after secondary cc={}'.format(cc))
+                if 1 <= cc <= N_CC:
+                    C[cc] = 1
