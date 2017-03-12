@@ -155,6 +155,11 @@
  proc cimport data=incoef.hcccoefn infile=inc;
  run;
 
+ filename inf "&MODELDIR/F221690P";
+ proc cimport library=library infile=inf;
+ run;
+
+
 /*
  tailored part ends here
 */
