@@ -37,9 +37,9 @@ MAX_AGE = 1000
 
 # gratuitous use of regular expressions
 PATTERN = re.compile(
-    r"""
+    """
     (NE)?                    # optional 'NE' prefix
-    (?P<sex>[MF])            # sex
+    (?P<sex>M|F)             # sex
     (?P<age_lo>\d{1,2})      # lower age limit
     (_                       # underscore
     (?P<age_hi>\d{1,2}|GT)   # upper age limit
