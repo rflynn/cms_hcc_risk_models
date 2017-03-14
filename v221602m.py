@@ -28,6 +28,7 @@ import formats
 import v221602p
 import v22h79l1
 import v22i0ed1
+import v22h79h1
 import agesexv2
 import regression_variables as rv
 
@@ -35,6 +36,8 @@ import regression_variables as rv
 #===================================================================
 INP = pandas.read_csv('input/2017/person.csv', parse_dates=['DOB'])
 IND = pandas.read_csv('input/2017/diag.csv')
+
+OUTDATA = None
 IDVAR = 'HICNO'
 
 # merge person and diag data (one row per person/diag
@@ -58,6 +61,7 @@ hcc_formats = formats.HccFormats(fname)
 
 
 # loop over patients
+#======================================================================
 for hicno in inpind['HICNO'].unique():
 
     # get rows from inpind for this patient
@@ -66,17 +70,27 @@ for hicno in inpind['HICNO'].unique():
     # get demographic data from ptrows
     dob = ptrows.iloc[0]['DOB']
     sex = ptrows.iloc[0]['SEX']
+    ltimcaid = ptrows.iloc[0]['LTIMCAID']
+    nemcaid = ptrows.iloc[0]['NEMCAID']
+    orec = ptrows.iloc[0]['OREC']
 
     # calculate age
     agef = DATE_ASOF.year - dob.year
     agef_edit = agef
 
-    orec = ptrows.iloc[0]['OREC']
+    # initialize dummy variable dictionary
+    dumvars = {}
 
-    # create demographics regression variables
+    # create demographic regression variables
     disabl, origds, cell, necell = agesexv2.create_demographic_regression_variables(
         agef_edit, sex, orec)
 
+    dumvars['DISABL'] = disabl
+    dumvars['ORIGDS'] = origds
+    for k,v in cell.items():
+        dumvars[k] = v
+    for k,v in necell.items():
+        dumvars[k] = v
 
     # initialize C and HCC arrays
     # these are just flags.  we use N_CC + 1 so that
@@ -87,6 +101,7 @@ for hicno in inpind['HICNO'].unique():
     HCC = [0] * (rv.N_CC + 1)
 
     # loop over diagnoses and assign CCs
+    #======================================================================
     for ii, row in ptrows.iterrows():
         print()
 
@@ -146,3 +161,41 @@ for hicno in inpind['HICNO'].unique():
                 print('after secondary cc={}'.format(cc))
                 if 1 <= cc <= rv.N_CC:
                     C[cc] = 1
+
+    # calculate regression variables
+    #======================================================================
+
+    # %*interaction;
+    OriginallyDisabled_Female = origds * int(sex==2)
+    OriginallyDisabled_Male   = origds * int(sex==1)
+
+    dumvars['OriginallyDisabled_Female'] = OriginallyDisabled_Female
+    dumvars['OriginallyDisabled_Male'] = OriginallyDisabled_Male
+
+    # %* NE interactions;
+    NE_ORIGDS       = int(agef>=65) * int(orec==1)
+    NMCAID_NORIGDIS = int(nemcaid <=0 and NE_ORIGDS <=0)
+    MCAID_NORIGDIS  = int(nemcaid > 0 and NE_ORIGDS <=0)
+    NMCAID_ORIGDIS  = int(nemcaid <=0 and NE_ORIGDS > 0)
+    MCAID_ORIGDIS   = int(nemcaid > 0 and NE_ORIGDS > 0)
+
+    dumvars['NMCAID_NORIGDIS'] = NMCAID_NORIGDIS
+    dumvars['MCAID_NORIGDIS'] = MCAID_NORIGDIS
+    dumvars['NMCAID_ORIGDIS'] = NMCAID_ORIGDIS
+    dumvars['MCAID_ORIGDIS'] = MCAID_ORIGDIS
+
+    #%INTER(PVAR =  NMCAID_NORIGDIS,  RLIST = &NE_AGESEXV );
+    #%INTER(PVAR =  MCAID_NORIGDIS,   RLIST = &NE_AGESEXV );
+    #%INTER(PVAR =  NMCAID_ORIGDIS,   RLIST = &ONE_AGESEXV);
+    #%INTER(PVAR =  MCAID_ORIGDIS,    RLIST = &ONE_AGESEXV);
+    for key in rv.NE_AGESEXV:
+        dumvars['NMCAID_NORIGDIS_{}'.format(key)] = NMCAID_NORIGDIS * dumvars[key]
+    for key in rv.NE_AGESEXV:
+        dumvars['MCAID_NORIGDIS_{}'.format(key)] = MCAID_NORIGDIS * dumvars[key]
+    for key in rv.ONE_AGESEXV:
+        dumvars['NMCAID_ORIGDIS_{}'.format(key)] = NMCAID_ORIGDIS * dumvars[key]
+    for key in rv.ONE_AGESEXV:
+        dumvars['MCAID_ORIGDIS_{}'.format(key)] = MCAID_ORIGDIS * dumvars[key]
+
+    # impose hierarchy
+    HCC = v22h79h1.impose_hierarchy(C, HCC)
