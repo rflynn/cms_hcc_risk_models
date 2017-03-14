@@ -48,7 +48,7 @@ PATTERN = re.compile(
 
 
 def parse_agesex_var(x):
-    """Take a string of the form NEF65 or NEF95_GT and return sex and
+    """Take a string of the form F0_34, NEF65, or NEF95_GT and return sex and
     age range.
     """
     m = re.match(PATTERN, x)
