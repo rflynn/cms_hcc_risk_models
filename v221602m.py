@@ -80,6 +80,8 @@ for hicno in inpind['HICNO'].unique():
 
     # initialize dummy variable dictionary
     dumvars = {}
+    dumvars['LTIMCAID'] = ltimcaid
+    dumvars['NEMCAID'] = nemcaid
 
     # create demographic regression variables
     disabl, origds, cell, necell = agesexv2.create_demographic_regression_variables(
@@ -199,3 +201,116 @@ for hicno in inpind['HICNO'].unique():
 
     # impose hierarchy
     HCC = v22h79h1.impose_hierarchy(C, HCC)
+
+    # %************************
+    # * interaction variables
+    # *************************;
+
+    # %*diagnostic categories;
+    dumvars['CANCER']          = max(HCC[8], HCC[9], HCC[10], HCC[11], HCC[12])
+    dumvars['DIABETES']        = max(HCC[17], HCC[18], HCC[19])
+    dumvars['CARD_RESP_FAIL']  = max(HCC[82], HCC[83], HCC[84])
+    dumvars['CHF']             = HCC[85]
+    dumvars['gCopdCF']         = max(HCC[110], HCC[111], HCC[112])
+    dumvars['RENAL']           = max(HCC[134], HCC[135], HCC[136], HCC[137])
+    dumvars['SEPSIS']          = HCC[2]
+    dumvars['gSubstanceAbuse'] = max(HCC[54], HCC[55])
+    dumvars['gPsychiatric']    = max(HCC[57], HCC[58])
+
+    # %*community models interactions ;
+    dumvars['HCC47_gCancer']                = HCC[47]*dumvars['CANCER']
+    dumvars['HCC85_gDiabetesMellit']        = HCC[85]*dumvars['DIABETES']
+    dumvars['HCC85_gCopdCF']                = HCC[85]*dumvars['gCopdCF']
+    dumvars['HCC85_gRenal']                 = HCC[85]*dumvars['RENAL']
+    dumvars['gRespDepandArre_gCopdCF']      = dumvars['CARD_RESP_FAIL']*dumvars['gCopdCF']
+    dumvars['HCC85_HCC96']                  = HCC[85]*HCC[96]
+    dumvars['gSubstanceAbuse_gPsychiatric'] = dumvars['gSubstanceAbuse']*dumvars['gPsychiatric']
+
+    # %*institutional model;
+    dumvars['PRESSURE_ULCER'] = max(HCC[157], HCC[158]) # /*10/19/2012*/
+    dumvars['CHF_gCopdCF']                  = dumvars['CHF']*dumvars['gCopdCF']
+    dumvars['gCopdCF_CARD_RESP_FAIL']       = dumvars['gCopdCF']*dumvars['CARD_RESP_FAIL']
+    dumvars['SEPSIS_PRESSURE_ULCER']        = dumvars['SEPSIS']*dumvars['PRESSURE_ULCER']
+    dumvars['SEPSIS_ARTIF_OPENINGS']        = dumvars['SEPSIS']*(HCC[188])
+    dumvars['ART_OPENINGS_PRESSURE_ULCER']  = (HCC[188])*dumvars['PRESSURE_ULCER']
+    dumvars['DIABETES_CHF']                 = dumvars['DIABETES']*dumvars['CHF']
+    dumvars['gCopdCF_ASP_SPEC_BACT_PNEUM']  = dumvars['gCopdCF']*(HCC[114])
+    dumvars['ASP_SPEC_BACT_PNEUM_PRES_ULC'] = (HCC[114])*dumvars['PRESSURE_ULCER']
+    dumvars['SEPSIS_ASP_SPEC_BACT_PNEUM']   = dumvars['SEPSIS']*(HCC[114])
+    dumvars['SCHIZOPHRENIA_gCopdCF']        = (HCC[57])*dumvars['gCopdCF']
+    dumvars['SCHIZOPHRENIA_CHF']            = (HCC[57])*dumvars['CHF']
+    dumvars['SCHIZOPHRENIA_SEIZURES']       = (HCC[57])*(HCC[79])
+
+    dumvars['DISABLED_HCC85']          = dumvars['DISABL']*(HCC[85])
+    dumvars['DISABLED_PRESSURE_ULCER'] = dumvars['DISABL']*dumvars['PRESSURE_ULCER']
+    dumvars['DISABLED_HCC161']         = dumvars['DISABL']*(HCC[161])
+    dumvars['DISABLED_HCC39']          = dumvars['DISABL']*(HCC[39])
+    dumvars['DISABLED_HCC77']          = dumvars['DISABL']*(HCC[77])
+    dumvars['DISABLED_HCC6']           = dumvars['DISABL']*(HCC[6])
+
+    # add the HCC variables to dumvars
+    for ii in rv.CC_NUMS:
+        key = 'HCC{}'.format(ii)
+        dumvars[key] = HCC[ii]
+
+    # calculate risk scores
+    #======================================================================
+    hcc_risk_scores = {}
+
+    # community models
+    #----------------------------------------------------------------------
+    risk_score = 0.0
+    for var in rv.COMM_REGA:
+        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('CNA', var)][0]
+    hcc_risk_scores['CNA'] = risk_score
+
+    risk_score = 0.0
+    for var in rv.COMM_REGD:
+        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('CND', var)][0]
+    hcc_risk_scores['CND'] = risk_score
+
+    risk_score = 0.0
+    for var in rv.COMM_REGA:
+        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('CFA', var)][0]
+    hcc_risk_scores['CFA'] = risk_score
+
+    risk_score = 0.0
+    for var in rv.COMM_REGD:
+        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('CFD', var)][0]
+    hcc_risk_scores['CFD'] = risk_score
+
+    risk_score = 0.0
+    for var in rv.COMM_REGA:
+        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('CPA', var)][0]
+    hcc_risk_scores['CPA'] = risk_score
+
+    risk_score = 0.0
+    for var in rv.COMM_REGD:
+        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('CPD', var)][0]
+    hcc_risk_scores['CPD'] = risk_score
+
+    # institutional model
+    #----------------------------------------------------------------------
+    risk_score = 0.0
+    for var in rv.INST_REG:
+        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('INS', var)][0]
+    hcc_risk_scores['INS'] = risk_score
+
+    # new enrollees model
+    #----------------------------------------------------------------------
+    risk_score = 0.0
+    for var in rv.NE_REG:
+        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('NE', var)][0]
+    hcc_risk_scores['NE'] = risk_score
+
+    # new enrollees model
+    #----------------------------------------------------------------------
+    risk_score = 0.0
+    for var in rv.NE_REG:
+        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('SNPNE', var)][0]
+    hcc_risk_scores['SNPNE'] = risk_score
+
+    # OUTPUT
+    #----------------------------------------------------------------------
+    print()
+    print('hcc_risk_scores: ', hcc_risk_scores)
