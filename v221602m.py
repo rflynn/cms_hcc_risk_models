@@ -254,61 +254,38 @@ for hicno in inpind['HICNO'].unique():
         dumvars[key] = HCC[ii]
 
     # calculate risk scores
+    #   (CNA) Community NonDual Aged
+    #   (CND) Community NonDual Disabled
+    #   (CFA) Community Full Benefit Dual Aged
+    #   (CFD) Community Full Benefit Dual Disabled
+    #   (CPA) Community Partial Benefit Dual Aged
+    #   (CPD) Community Partial Benefit Dual Disabled
+    #   (INS) Long Term Institutional
+    #   (NE) New Enrollees
+    #   (SNPNE) SNP New Enrollees
     #======================================================================
     hcc_risk_scores = {}
 
-    # community models
-    #----------------------------------------------------------------------
-    risk_score = 0.0
-    for var in rv.COMM_REGA:
-        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('CNA', var)][0]
-    hcc_risk_scores['CNA'] = risk_score
+    model_prefixes = [
+        'CNA', 'CND', 'CFA', 'CFD', 'CPA', 'CPD', # Community models
+        'INS',                                    # Institutional model
+        'NE',                                     # New Enrollees model
+        'SNPNE',                                  # SNP New Enrollees model
+    ]
 
-    risk_score = 0.0
-    for var in rv.COMM_REGD:
-        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('CND', var)][0]
-    hcc_risk_scores['CND'] = risk_score
+    vars_for_models = [
+        rv.COMM_REGA, rv.COMM_REGD, rv.COMM_REGA, rv.COMM_REGD, rv.COMM_REGA, rv.COMM_REGD,
+        rv.INST_REG,
+        rv.NE_REG,
+        rv.NE_REG
+    ]
 
-    risk_score = 0.0
-    for var in rv.COMM_REGA:
-        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('CFA', var)][0]
-    hcc_risk_scores['CFA'] = risk_score
+    for model_prefix, model_vars in zip(model_prefixes, vars_for_models):
+        risk_score = 0.0
+        for var in model_vars:
+            risk_score += dumvars[var] * hcccoefn['{}_{}'.format(model_prefix, var)][0]
+        hcc_risk_scores[model_prefix] = risk_score
 
-    risk_score = 0.0
-    for var in rv.COMM_REGD:
-        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('CFD', var)][0]
-    hcc_risk_scores['CFD'] = risk_score
-
-    risk_score = 0.0
-    for var in rv.COMM_REGA:
-        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('CPA', var)][0]
-    hcc_risk_scores['CPA'] = risk_score
-
-    risk_score = 0.0
-    for var in rv.COMM_REGD:
-        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('CPD', var)][0]
-    hcc_risk_scores['CPD'] = risk_score
-
-    # institutional model
-    #----------------------------------------------------------------------
-    risk_score = 0.0
-    for var in rv.INST_REG:
-        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('INS', var)][0]
-    hcc_risk_scores['INS'] = risk_score
-
-    # new enrollees model
-    #----------------------------------------------------------------------
-    risk_score = 0.0
-    for var in rv.NE_REG:
-        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('NE', var)][0]
-    hcc_risk_scores['NE'] = risk_score
-
-    # new enrollees model
-    #----------------------------------------------------------------------
-    risk_score = 0.0
-    for var in rv.NE_REG:
-        risk_score += dumvars[var] * hcccoefn['{}_{}'.format('SNPNE', var)][0]
-    hcc_risk_scores['SNPNE'] = risk_score
 
     # OUTPUT
     #----------------------------------------------------------------------
