@@ -74,7 +74,7 @@ def create_demographic_regression_variables(age, sex, orec):
     disabl = int(age < 65 and orec != 0)
 
     # originally disabled
-    origds = int(orec == 1) * int(disabl==0)
+    origds = int(orec == 1) * int(disabl == 0)
 
     print('disabl={}, origds={}'.format(disabl, origds))
 

@@ -34,7 +34,7 @@ import agesexv2
 import regression_variables as rv
 
 # input
-#===================================================================
+# ===================================================================
 INP = pandas.read_csv('input/2017/person.csv', parse_dates=['DOB'])
 IND = pandas.read_csv('input/2017/diag.csv')
 
@@ -46,8 +46,8 @@ inpind = pandas.merge(INP, IND, on=IDVAR)
 inpind = inpind.sort_values(IDVAR)
 
 
-KEEPVAR = [IDVAR] + rv.INPUTVARS + rv.SCOREVARS + \
-          rv.DEMVARS + rv.HCCV22_list79 + rv.CCV22_list79
+KEEPVAR = ([IDVAR] + rv.INPUTVARS + rv.SCOREVARS +
+           rv.DEMVARS + rv.HCCV22_list79 + rv.CCV22_list79)
 SEDITS = True
 DATE_ASOF = datetime.date(2016, 2, 1)
 
@@ -60,13 +60,12 @@ fname = 'cms_models/2017/cms_hcc_v2216_79_02/F221690P.csv'
 hcc_formats = formats.HccFormats(fname)
 
 
-
 # loop over patients
-#======================================================================
+# ======================================================================
 for hicno in inpind['HICNO'].unique():
 
     # get rows from inpind for this patient
-    ptrows = inpind.loc[inpind['HICNO']==hicno, :]
+    ptrows = inpind.loc[inpind['HICNO'] == hicno, :]
 
     # get demographic data from ptrows
     dob = ptrows.iloc[0]['DOB']
@@ -90,9 +89,9 @@ for hicno in inpind['HICNO'].unique():
 
     dumvars['DISABL'] = disabl
     dumvars['ORIGDS'] = origds
-    for k,v in cell.items():
+    for k, v in cell.items():
         dumvars[k] = v
-    for k,v in necell.items():
+    for k, v in necell.items():
         dumvars[k] = v
 
     # initialize C and HCC arrays
@@ -104,7 +103,7 @@ for hicno in inpind['HICNO'].unique():
     HCC = [0] * (rv.N_CC + 1)
 
     # loop over diagnoses and assign CCs
-    #======================================================================
+    # ======================================================================
     for ii, row in ptrows.iterrows():
         print()
 
@@ -138,7 +137,6 @@ for hicno in inpind['HICNO'].unique():
                 if 1 <= cc <= rv.N_CC:
                     C[cc] = 1
 
-
         if diag_type == 0:
             # do ICD-10-CM edit stuff
             cc = v22i0ed1.icd10_edits(cc, agef_edit, sex, diag, SEDITS, hcc_formats)
@@ -166,31 +164,31 @@ for hicno in inpind['HICNO'].unique():
                     C[cc] = 1
 
     # calculate regression variables
-    #======================================================================
+    # ======================================================================
 
     # %*interaction;
-    OriginallyDisabled_Female = origds * int(sex==2)
-    OriginallyDisabled_Male   = origds * int(sex==1)
+    OriginallyDisabled_Female = origds * int(sex == 2)
+    OriginallyDisabled_Male   = origds * int(sex == 1)
 
     dumvars['OriginallyDisabled_Female'] = OriginallyDisabled_Female
     dumvars['OriginallyDisabled_Male'] = OriginallyDisabled_Male
 
     # %* NE interactions;
-    NE_ORIGDS       = int(agef>=65) * int(orec==1)
-    NMCAID_NORIGDIS = int(nemcaid <=0 and NE_ORIGDS <=0)
-    MCAID_NORIGDIS  = int(nemcaid > 0 and NE_ORIGDS <=0)
-    NMCAID_ORIGDIS  = int(nemcaid <=0 and NE_ORIGDS > 0)
-    MCAID_ORIGDIS   = int(nemcaid > 0 and NE_ORIGDS > 0)
+    NE_ORIGDS       = int(agef >= 65) * int(orec == 1)
+    NMCAID_NORIGDIS = int(nemcaid <= 0 and NE_ORIGDS <= 0)
+    MCAID_NORIGDIS  = int(nemcaid >  0 and NE_ORIGDS <= 0)
+    NMCAID_ORIGDIS  = int(nemcaid <= 0 and NE_ORIGDS >  0)
+    MCAID_ORIGDIS   = int(nemcaid >  0 and NE_ORIGDS >  0)
 
     dumvars['NMCAID_NORIGDIS'] = NMCAID_NORIGDIS
     dumvars['MCAID_NORIGDIS'] = MCAID_NORIGDIS
     dumvars['NMCAID_ORIGDIS'] = NMCAID_ORIGDIS
     dumvars['MCAID_ORIGDIS'] = MCAID_ORIGDIS
 
-    #%INTER(PVAR =  NMCAID_NORIGDIS,  RLIST = &NE_AGESEXV );
-    #%INTER(PVAR =  MCAID_NORIGDIS,   RLIST = &NE_AGESEXV );
-    #%INTER(PVAR =  NMCAID_ORIGDIS,   RLIST = &ONE_AGESEXV);
-    #%INTER(PVAR =  MCAID_ORIGDIS,    RLIST = &ONE_AGESEXV);
+    # %INTER(PVAR =  NMCAID_NORIGDIS,  RLIST = &NE_AGESEXV );
+    # %INTER(PVAR =  MCAID_NORIGDIS,   RLIST = &NE_AGESEXV );
+    # %INTER(PVAR =  NMCAID_ORIGDIS,   RLIST = &ONE_AGESEXV);
+    # %INTER(PVAR =  MCAID_ORIGDIS,    RLIST = &ONE_AGESEXV);
     for key in rv.NE_AGESEXV:
         dumvars['NMCAID_NORIGDIS_{}'.format(key)] = NMCAID_NORIGDIS * dumvars[key]
     for key in rv.NE_AGESEXV:
@@ -219,35 +217,35 @@ for hicno in inpind['HICNO'].unique():
     dumvars['gPsychiatric']    = max(HCC[57], HCC[58])
 
     # %*community models interactions ;
-    dumvars['HCC47_gCancer']                = HCC[47]*dumvars['CANCER']
-    dumvars['HCC85_gDiabetesMellit']        = HCC[85]*dumvars['DIABETES']
-    dumvars['HCC85_gCopdCF']                = HCC[85]*dumvars['gCopdCF']
-    dumvars['HCC85_gRenal']                 = HCC[85]*dumvars['RENAL']
-    dumvars['gRespDepandArre_gCopdCF']      = dumvars['CARD_RESP_FAIL']*dumvars['gCopdCF']
-    dumvars['HCC85_HCC96']                  = HCC[85]*HCC[96]
-    dumvars['gSubstanceAbuse_gPsychiatric'] = dumvars['gSubstanceAbuse']*dumvars['gPsychiatric']
+    dumvars['HCC47_gCancer']                = HCC[47] * dumvars['CANCER']
+    dumvars['HCC85_gDiabetesMellit']        = HCC[85] * dumvars['DIABETES']
+    dumvars['HCC85_gCopdCF']                = HCC[85] * dumvars['gCopdCF']
+    dumvars['HCC85_gRenal']                 = HCC[85] * dumvars['RENAL']
+    dumvars['gRespDepandArre_gCopdCF']      = dumvars['CARD_RESP_FAIL'] * dumvars['gCopdCF']
+    dumvars['HCC85_HCC96']                  = HCC[85] * HCC[96]
+    dumvars['gSubstanceAbuse_gPsychiatric'] = dumvars['gSubstanceAbuse'] * dumvars['gPsychiatric']
 
     # %*institutional model;
-    dumvars['PRESSURE_ULCER'] = max(HCC[157], HCC[158]) # /*10/19/2012*/
-    dumvars['CHF_gCopdCF']                  = dumvars['CHF']*dumvars['gCopdCF']
-    dumvars['gCopdCF_CARD_RESP_FAIL']       = dumvars['gCopdCF']*dumvars['CARD_RESP_FAIL']
-    dumvars['SEPSIS_PRESSURE_ULCER']        = dumvars['SEPSIS']*dumvars['PRESSURE_ULCER']
-    dumvars['SEPSIS_ARTIF_OPENINGS']        = dumvars['SEPSIS']*(HCC[188])
-    dumvars['ART_OPENINGS_PRESSURE_ULCER']  = (HCC[188])*dumvars['PRESSURE_ULCER']
-    dumvars['DIABETES_CHF']                 = dumvars['DIABETES']*dumvars['CHF']
-    dumvars['gCopdCF_ASP_SPEC_BACT_PNEUM']  = dumvars['gCopdCF']*(HCC[114])
-    dumvars['ASP_SPEC_BACT_PNEUM_PRES_ULC'] = (HCC[114])*dumvars['PRESSURE_ULCER']
-    dumvars['SEPSIS_ASP_SPEC_BACT_PNEUM']   = dumvars['SEPSIS']*(HCC[114])
-    dumvars['SCHIZOPHRENIA_gCopdCF']        = (HCC[57])*dumvars['gCopdCF']
-    dumvars['SCHIZOPHRENIA_CHF']            = (HCC[57])*dumvars['CHF']
-    dumvars['SCHIZOPHRENIA_SEIZURES']       = (HCC[57])*(HCC[79])
+    dumvars['PRESSURE_ULCER'] = max(HCC[157], HCC[158])  # /*10/19/2012*/
+    dumvars['CHF_gCopdCF']                  = dumvars['CHF'] * dumvars['gCopdCF']
+    dumvars['gCopdCF_CARD_RESP_FAIL']       = dumvars['gCopdCF'] * dumvars['CARD_RESP_FAIL']
+    dumvars['SEPSIS_PRESSURE_ULCER']        = dumvars['SEPSIS'] * dumvars['PRESSURE_ULCER']
+    dumvars['SEPSIS_ARTIF_OPENINGS']        = dumvars['SEPSIS'] * (HCC[188])
+    dumvars['ART_OPENINGS_PRESSURE_ULCER']  = (HCC[188]) * dumvars['PRESSURE_ULCER']
+    dumvars['DIABETES_CHF']                 = dumvars['DIABETES'] * dumvars['CHF']
+    dumvars['gCopdCF_ASP_SPEC_BACT_PNEUM']  = dumvars['gCopdCF'] * (HCC[114])
+    dumvars['ASP_SPEC_BACT_PNEUM_PRES_ULC'] = (HCC[114]) * dumvars['PRESSURE_ULCER']
+    dumvars['SEPSIS_ASP_SPEC_BACT_PNEUM']   = dumvars['SEPSIS'] * (HCC[114])
+    dumvars['SCHIZOPHRENIA_gCopdCF']        = (HCC[57]) * dumvars['gCopdCF']
+    dumvars['SCHIZOPHRENIA_CHF']            = (HCC[57]) * dumvars['CHF']
+    dumvars['SCHIZOPHRENIA_SEIZURES']       = (HCC[57]) * (HCC[79])
 
-    dumvars['DISABLED_HCC85']          = dumvars['DISABL']*(HCC[85])
-    dumvars['DISABLED_PRESSURE_ULCER'] = dumvars['DISABL']*dumvars['PRESSURE_ULCER']
-    dumvars['DISABLED_HCC161']         = dumvars['DISABL']*(HCC[161])
-    dumvars['DISABLED_HCC39']          = dumvars['DISABL']*(HCC[39])
-    dumvars['DISABLED_HCC77']          = dumvars['DISABL']*(HCC[77])
-    dumvars['DISABLED_HCC6']           = dumvars['DISABL']*(HCC[6])
+    dumvars['DISABLED_HCC85']          = dumvars['DISABL'] * (HCC[85])
+    dumvars['DISABLED_PRESSURE_ULCER'] = dumvars['DISABL'] * dumvars['PRESSURE_ULCER']
+    dumvars['DISABLED_HCC161']         = dumvars['DISABL'] * (HCC[161])
+    dumvars['DISABLED_HCC39']          = dumvars['DISABL'] * (HCC[39])
+    dumvars['DISABLED_HCC77']          = dumvars['DISABL'] * (HCC[77])
+    dumvars['DISABLED_HCC6']           = dumvars['DISABL'] * (HCC[6])
 
     # add the HCC variables to dumvars
     for ii in rv.CC_NUMS:
@@ -264,14 +262,14 @@ for hicno in inpind['HICNO'].unique():
     #   (INS) Long Term Institutional
     #   (NE) New Enrollees
     #   (SNPNE) SNP New Enrollees
-    #======================================================================
+    # ======================================================================
     hcc_risk_scores = {}
 
     model_prefixes = [
-        'CNA', 'CND', 'CFA', 'CFD', 'CPA', 'CPD', # Community models
-        'INS',                                    # Institutional model
-        'NE',                                     # New Enrollees model
-        'SNPNE',                                  # SNP New Enrollees model
+        'CNA', 'CND', 'CFA', 'CFD', 'CPA', 'CPD',  # Community models
+        'INS',                                     # Institutional model
+        'NE',                                      # New Enrollees model
+        'SNPNE',                                   # SNP New Enrollees model
     ]
 
     vars_for_models = [
@@ -287,8 +285,7 @@ for hicno in inpind['HICNO'].unique():
             risk_score += dumvars[var] * hcccoefn['{}_{}'.format(model_prefix, var)][0]
         hcc_risk_scores[model_prefix] = risk_score
 
-
     # OUTPUT
-    #----------------------------------------------------------------------
+    # ----------------------------------------------------------------------
     print()
     print('hcc_risk_scores: ', hcc_risk_scores)
