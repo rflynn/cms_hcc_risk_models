@@ -4,6 +4,9 @@
 test: install
 	@echo "TODO: add tests"
 
+lint:
+	./venv3/bin/flake8 *.py
+
 install: venv3
 
 venv3: requirements.txt

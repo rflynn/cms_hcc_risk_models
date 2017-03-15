@@ -19,4 +19,5 @@ matrix:
             - libpython3-dev
       before_install:
         - make install
+        - make lint
         - make test
