@@ -1,0 +1,22 @@
+# vim: set ts=2 et:
+
+matrix:
+  include:
+
+    # Ubuntu 14.04 + Python 3.4
+    - os: linux
+      dist: trusty
+      sudo: required
+      language: generic
+      python:
+        - 3.4  # NOTE: most recent on Ubuntu 14.04
+      env:
+      addons:
+        apt:
+          packages:
+            - cmake
+            - python3
+            - libpython3-dev
+      before_install:
+        - make install
+        - make test
