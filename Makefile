@@ -2,7 +2,8 @@
 
 
 test: install
-	@echo "TODO: add tests"
+	./venv3/bin/python formats.py
+	./venv3/bin/python v221602m.py
 
 lint:
 	./venv3/bin/flake8 *.py
