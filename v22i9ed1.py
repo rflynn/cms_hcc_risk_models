@@ -32,6 +32,7 @@
  **********************************************************************;
 """
 
+
 def icd9_edits(cc, age, sex, diag, sedits, hcc_formats):
 
     diag_type = 9
@@ -39,12 +40,12 @@ def icd9_edits(cc, age, sex, diag, sedits, hcc_formats):
     if sex == 2 and diag in set(['2860', '2861']):
         cc = 48
 
-    elif age < 18 and code in set(
+    elif age < 18 and cc in set(
             ['4910', '4911', '49120', '49121', '49122', '4918',
              '4919', '4920',  '4928',  '496',  '5181', '5182']):
         cc = 112
 
-    elif age < 18 and code in set(
+    elif age < 18 and cc in set(
             ['49320', '49321', '49322']):
         cc = -1
 

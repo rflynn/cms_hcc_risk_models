@@ -16,8 +16,6 @@ DEMVARS = [
     'NEM95_GT',
 ]
 
-
-
 SCOREVARS = [
     'SCORE_COMMUNITY_NA', 'SCORE_COMMUNITY_ND',
     'SCORE_COMMUNITY_FBA', 'SCORE_COMMUNITY_FBD',
@@ -26,8 +24,7 @@ SCOREVARS = [
     'SCORE_SNP_NEW_ENROLLEE',
 ]
 
-
-N_CC=201 #max # of HCCs
+N_CC = 201  # max # of HCCs
 
 CC_NUMS = [
     1,   2,   6,   8,   9,   10,  11,  12,
@@ -49,10 +46,10 @@ CCV22_list79 = ['CC{}'.format(num) for num in CC_NUMS]
 
 # %* age/sex variables for Insititutional regression;
 AGESEXV = [
-    'F0_34','F35_44','F45_54','F55_59','F60_64','F65_69',
-    'F70_74','F75_79','F80_84','F85_89','F90_94','F95_GT',
-    'M0_34','M35_44','M45_54','M55_59','M60_64','M65_69',
-    'M70_74','M75_79','M80_84','M85_89','M90_94','M95_GT',
+    'F0_34', 'F35_44', 'F45_54', 'F55_59', 'F60_64', 'F65_69',
+    'F70_74', 'F75_79', 'F80_84', 'F85_89', 'F90_94', 'F95_GT',
+    'M0_34', 'M35_44', 'M45_54', 'M55_59', 'M60_64', 'M65_69',
+    'M70_74', 'M75_79', 'M80_84', 'M85_89', 'M90_94', 'M95_GT',
 ]
 
 
@@ -71,20 +68,20 @@ NE_AGESEXV = [
 
 # %* age/sex variables for Community Aged regression;
 AGESEXVA = [
-    'F65_69','F70_74','F75_79','F80_84','F85_89','F90_94','F95_GT',
-    'M65_69','M70_74','M75_79','M80_84','M85_89','M90_94','M95_GT',
+    'F65_69', 'F70_74', 'F75_79', 'F80_84', 'F85_89', 'F90_94', 'F95_GT',
+    'M65_69', 'M70_74', 'M75_79', 'M80_84', 'M85_89', 'M90_94', 'M95_GT',
 ]
 
 # %* age/sex variables for Community Disabled regression;
 AGESEXVD = [
-    'F0_34','F35_44','F45_54','F55_59','F60_64',
-    'M0_34','M35_44','M45_54','M55_59','M60_64',
+    'F0_34', 'F35_44', 'F45_54', 'F55_59', 'F60_64',
+    'M0_34', 'M35_44', 'M45_54', 'M55_59', 'M60_64',
 ]
 
 # %* diagnostic categories necessary to create interaction variables;
 DIAG_CAT = [
-    'CANCER','DIABETES','CHF','CARD_RESP_FAIL','gCopdCF','RENAL',
-    'SEPSIS','PRESSURE_ULCER','gSubstanceAbuse','gPsychiatric'
+    'CANCER', 'DIABETES', 'CHF', 'CARD_RESP_FAIL', 'gCopdCF', 'RENAL',
+    'SEPSIS', 'PRESSURE_ULCER', 'gSubstanceAbuse', 'gPsychiatric'
 ]
 
 # %*orig disabled interactions for Community Aged regressions;
@@ -107,7 +104,6 @@ COMM_REGA = AGESEXVA + ORIG_INT + HCCV22_list79 + INTERRACC_VARSA
 
 # %*variables for Community Disabled regressions ;
 COMM_REGD = AGESEXVD + HCCV22_list79 + INTERRACC_VARSD
-
 
 
 # %*interaction variables for Institutional regression;
@@ -134,15 +130,14 @@ INTERRACI_VARS = [
 INST_REG = AGESEXV + ['LTIMCAID', 'ORIGDS'] + INTERRACI_VARS + HCCV22_list79
 
 
-
 # %*age/sex variables for ORIGDS New Enrollee and SNP New Enrollee interactions;
 ONE_AGESEXV = [
-      'NEF65',     'NEF66',     'NEF67',     'NEF68',     'NEF69',
-      'NEF70_74',  'NEF75_79',  'NEF80_84',
-      'NEF85_89',  'NEF90_94',  'NEF95_GT',
-      'NEM65',     'NEM66',     'NEM67',     'NEM68',     'NEM69',
-      'NEM70_74',  'NEM75_79',  'NEM80_84',
-      'NEM85_89',  'NEM90_94',  'NEM95_GT',
+    'NEF65',     'NEF66',     'NEF67',     'NEF68',     'NEF69',
+    'NEF70_74',  'NEF75_79',  'NEF80_84',
+    'NEF85_89',  'NEF90_94',  'NEF95_GT',
+    'NEM65',     'NEM66',     'NEM67',     'NEM68',     'NEM69',
+    'NEM70_74',  'NEM75_79',  'NEM80_84',
+    'NEM85_89',  'NEM90_94',  'NEM95_GT',
 ]
 
 
@@ -211,4 +206,4 @@ NE_REG = [
     'MCAID_ORIGDIS_NEM75_79',        'MCAID_ORIGDIS_NEM80_84',
     'MCAID_ORIGDIS_NEM85_89',        'MCAID_ORIGDIS_NEM90_94',
     'MCAID_ORIGDIS_NEM95_GT',
-    ]
+]

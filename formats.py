@@ -18,10 +18,9 @@ class HccFormats:
         """Split the single DataFrame into tables (e.g. AGEL, AGEU, ...)"""
         self.tables = {}
         for fmtname in self.df['FMTNAME'].unique():
-            tbl = self.df[self.df['FMTNAME']==fmtname]
+            tbl = self.df[self.df['FMTNAME'] == fmtname]
             tbl = tbl.set_index('START')
             self.tables[fmtname] = tbl.copy()
-
 
     def sedit_check_age(self, diag, age, diag_type):
         """Check MCE age restrictions on diagnosis code"""
@@ -44,7 +43,6 @@ class HccFormats:
 
         return valid
 
-
     def sedit_check_sex(self, diag, sex, diag_type):
         """Check MCE sex restrictions on diagnosis code"""
 
@@ -64,7 +62,6 @@ class HccFormats:
 
         return valid
 
-
     def cc_pri_assignment(self, diag, diag_type):
         cc = -1
         if diag_type == 0:
@@ -77,7 +74,6 @@ class HccFormats:
             cc = int(df.loc[diag]['LABEL'])
         return cc
 
-
     def cc_dup_assignment(self, diag, diag_type):
         cc = -1
         if diag_type == 0:
@@ -89,7 +85,6 @@ class HccFormats:
         if diag in df.index:
             cc = int(df.loc[diag]['LABEL'])
         return cc
-
 
     def cc_sec_assignment(self, diag, diag_type):
         cc = -1
@@ -111,14 +106,14 @@ if __name__ == '__main__':
     diag = 'C9332'
     diag_type = 0
     age = 65
-    assert(hcc_formats.sedit_check_age(diag, age, diag_type) == False)
+    assert(hcc_formats.sedit_check_age(diag, age, diag_type) is False)
     age = 3
-    assert(hcc_formats.sedit_check_age(diag, age, diag_type) == True)
+    assert(hcc_formats.sedit_check_age(diag, age, diag_type) is True)
 
     # a few sex tests
     diag = 'C50321'
     diag_type = 0
     sex = 2
-    assert(hcc_formats.sedit_check_sex(diag, sex, diag_type) == False)
+    assert(hcc_formats.sedit_check_sex(diag, sex, diag_type) is False)
     sex = 1
-    assert(hcc_formats.sedit_check_sex(diag, sex, diag_type) == True)
+    assert(hcc_formats.sedit_check_sex(diag, sex, diag_type) is True)
