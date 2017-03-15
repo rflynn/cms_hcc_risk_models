@@ -3,7 +3,6 @@
 
 test: install
 	@echo "TODO: add tests"
-	exit 1
 
 install: venv3
 
