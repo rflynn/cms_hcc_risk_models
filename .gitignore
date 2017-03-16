@@ -90,4 +90,3 @@ ENV/
 
 # vim tmp files
 .*.sw[op]
-venv3/

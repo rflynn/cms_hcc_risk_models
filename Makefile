@@ -4,22 +4,22 @@ SHELL := /bin/bash
 
 
 test: install
-	./venv3/bin/python formats.py
-	./venv3/bin/python v221602m.py
+	./venv/bin/python formats.py
+	./venv/bin/python v221602m.py
 
 lint:
-	./venv3/bin/flake8 *.py
+	./venv/bin/flake8 *.py
 
-install: venv3
+install: venv
 
-venv3: requirements.txt
-	[[ -d venv3 ]] || { virtualenv -p python3 venv3 || python3 -m venv venv3; }
-	./venv3/bin/pip install --upgrade pip
-	./venv3/bin/pip install -r requirements.txt
-	touch venv3  # prevent target from being re-run unless requirements.txt changes
+venv: requirements.txt
+	[[ -d venv ]] || { virtualenv -p python3 venv || python3 -m venv venv; }
+	./venv/bin/pip install --upgrade pip
+	./venv/bin/pip install -r requirements.txt
+	touch venv  # prevent target from being re-run unless requirements.txt changes
 
 clean:
-	$(RM) -r venv3
+	$(RM) -r venv
 
 distclean: clean
 
